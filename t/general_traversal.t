@@ -1,5 +1,6 @@
 use Test::More qw/ no_plan /;
-
+use DBIx::Class::Tree::Recursive;
+use DBIC::TestDatabase;
 my $tree = DBIx::Class::Tree::Recursive->new(%options);
 
 ## create a new tree

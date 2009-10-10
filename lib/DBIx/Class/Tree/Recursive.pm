@@ -20,12 +20,12 @@ has 'path' => (
     is  => 'ro',
     isa => Str,
     default => sub {
-	    my @path_array;
-	    
-	    ## later, I can change this to something like, 
-	    ## split ( $self->delimiter, @_ )
-	    push @path_array, $_ for split ('.', @_);
-	    @path_array;
+        my @path_array;
+        
+        ## later, I can change this to something like, 
+        ## split ( $self->delimiter, @_ )
+        push @path_array, $_ for split ('.', @_);
+        @path_array;
     }
 );
 
@@ -54,17 +54,17 @@ has 'child' => (
     isa => 'DBIx::Class::ResultSet',
     predicate => 'has_child',
     default => sub {
-	    my ($self, $node) = @_;
-	    my $rs = $self->search( 
-		  { 
-			path => $node->path .'%' 
-		  },
-		  {
-			limit => 1
-		  }
-		);
-		
-		return $rs->first;
+        my ($self, $node) = @_;
+        my $rs = $self->search( 
+          { 
+            path => $node->path .'%' 
+          },
+          {
+            limit => 1
+          }
+        );
+        
+        return $rs->first;
     },
     
     trigger => \&_set_parent_for_child
@@ -84,7 +84,14 @@ sub _set_parent_for_child {
 Get all descendents of a given node.
 =cut
 sub get_all_children {
-	my $self = @_;
+    my $self = @_;
+    my $rs = $self->search( 
+      {
+        path => $self->path . '%',    
+      }
+    );
+    
+    return $rs->all;
 }
 
 =head2 $self->get_all_ancestors($node)
@@ -92,19 +99,41 @@ Get all ancestors of a given node. Basically, just return the path
 above the current node in a "nice" format.
 =cut
 sub get_all_ancestors {
-	my $self = @_;
+    my $self = @_;
+    my $rs = $self->search(
+      {
+        path => '%' . %self->path   
+      }
+    );
+    
+    return $rs->all;
 }
 
-=head2 $self->add_child($node, $child)
+
+=head2 $self->add_child($node, $child_path, $content)
 Add a child to a given node. 
 =cut
 sub add_child {
-	my $self = @_;
+    my ($self, $child_path, $content) = @_;
+    my $rs = $self->create(
+	    $content, 
+	    path => $self->path . $child_path
+	);
+	
+	return $rs;
 }
 
-=head2 $self->set_parent($new_parent), $self->set_parent($node, $new_parent)
+=head2 $self->set_parent($new_parent_path), $self->set_parent($node, $new_parent_path)
 Reparent a given node.  If only one argument supplied, reparent the current node.
 Otherwise, reparent the node that's the first argument with the second argument.
 =cut
-sub set_parent {}
+sub set_parent {
+    my ($self, $new_parent_path, $content) = @_;
+    my $rs = $self->create(
+	    $content, 
+	    $new_parent_path . $self->path
+	);
+	
+	return $rs;
+}
 1;
