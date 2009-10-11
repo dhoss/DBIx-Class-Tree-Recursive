@@ -1,1 +1,2 @@
-My attempt at adding recursive query functionality to DBIx::Class, starting with materialized paths.
+This is my attempt at a materialized path implementation for DBIx::Class.
+Thanks very much to ribasushi for providing me with some better code to go off of.
