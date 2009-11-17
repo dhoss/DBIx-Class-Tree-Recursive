@@ -1,4 +1,4 @@
-package XXX::Result::Ordered::MatPath;
+package DBIx::Class::Tree::Ordered::MatPath;
  
 use warnings;
 use strict;
