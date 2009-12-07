@@ -46,7 +46,7 @@ sub all_children {
   });
 }
  
-sub _get_parent {
+sub get_parent {
   my $self = shift;
   my $pcol = $self->parent_column;
   return $self->result_source->resultset->find(
@@ -131,4 +131,8 @@ sub _shift_siblings {
   }
 }
  
+## direct children:
+## all_children->search (... -not_like => 'path $sep % $sep %
+
+
 1;
