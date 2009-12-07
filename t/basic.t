@@ -49,8 +49,7 @@ dump_rs ($rs, 'This guy is retarded, demote to last subordinate of 2nd subordina
 print "How many parents does the idiot have: " . $rs->find ({name => 'rookie 1.2'})->all_parents->count;
 print "\n";
 
-print "How many children does the chief have besides the retard: " . $chief->all_children
-    ->search({ name => { '!=', 'rookie 1.2' }})->count;
+print "How many children does the chief have besides the retard: " . $chief->get_direct_children->count;
 print "\n";
 
 
