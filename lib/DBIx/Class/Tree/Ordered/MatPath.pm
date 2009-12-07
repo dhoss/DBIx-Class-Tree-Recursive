@@ -138,17 +138,10 @@ sub get_direct_children {
 
 	my $path_col = $self->path_column;
 	my $sep = $self->path_separator;
-	my $esep = $self->escaped_separator;
-
-	my @path_parts = split (/$esep/, $self->get_column($path_col));
-
-	pop @path_parts; # don't need ourselves
-	for my $i (1 .. $#path_parts) {
-	  $path_parts[$i] = join ($sep, @path_parts[$i-1, $i]);
-	}
-	return $self->result_source->resultset->search({
-        $path_col => {  -not_like => \@path_parts. " $sep % $sep %" },
-	});
+	
+	return $self->all_children->search ( 
+		$path_col => { -not_like => 
+	                   join ($sep, $self->get_column ($path_col), '%', '%') } );
 }
 
 1;
