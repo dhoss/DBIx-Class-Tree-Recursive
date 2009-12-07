@@ -1,6 +1,6 @@
 package Schema::Result::Test;
 use base qw/DBIx::Class/;
-__PACKAGE__->load_components(qw/Core Tree::Ordered::MatPath/);
+__PACKAGE__->load_components(qw/ Tree::Ordered::MatPath Core /);
 __PACKAGE__->table ('nested');
 __PACKAGE__->add_columns (
   id => { data_type => 'int', is_auto_increment => 1 },

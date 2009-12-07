@@ -64,7 +64,7 @@ sub _position_from_value {
 sub _position_value {
   my ($self, $pos) = @_;
  
-  my $p = $self->_get_parent
+  my $p = $self->get_parent
     or return $pos;
  
   return join ($self->path_separator, $p->get_column($p->path_column), $pos);
@@ -76,7 +76,7 @@ sub _initial_position_value {
  
   my $init = $self->next::method;
  
-  my $p = $self->_get_parent
+  my $p = $self->get_parent
     or return $init;
  
   return join ($p->path_separator, $p->get_column($p->path_column), $init );
