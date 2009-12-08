@@ -84,5 +84,7 @@ sub check_rs {
     return 1;
 }
 
+## need to check positions of parents and children somehow.
+## so, check_rs($parent_position, $child_position, $actual_position)
 
 done_testing;
