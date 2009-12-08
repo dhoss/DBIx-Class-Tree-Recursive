@@ -51,8 +51,10 @@ print "\n";
 
 print "How many children does the chief have besides the retard: " . $chief->get_direct_children->count;
 print "\n";
-
-
+print "Direct child of the chief: " . $chief->get_immediate_child->name;
+print "\n";
+print "Direct child of first subordinate: " . $rs->find ({name => 'subordinate 1'})->get_immediate_child->name;
+print "\n";
 sub dump_rs {
   my ($rs, $desc) = @_;
 
@@ -63,6 +65,23 @@ sub dump_rs {
   }
 
   print "\n\n";
+}
+
+
+## we need to check a given items parents and children to make sure the positioning
+## is correct
+sub check_rs {
+    my( $rs ) = @_;
+    $rs->reset();
+    my $position_column = $rs->result_class->position_column();
+    my $expected_position = 0;
+    while (my $row = $rs->next()) {
+        $expected_position ++;
+        if ($row->get_column($position_column)!=$expected_position) {
+            return 0;
+        }
+    }
+    return 1;
 }
 
 

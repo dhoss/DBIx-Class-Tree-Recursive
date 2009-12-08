@@ -144,4 +144,15 @@ sub get_direct_children {
 	                   join ($sep, $self->get_column ($path_col), '%', '%') } );
 }
 
+sub get_immediate_child {
+	my $self = shift;
+
+	my $path_col = $self->path_column;
+	my $sep = $self->path_separator;
+	
+	return $self->all_children->search ( 
+		$path_col => { -not_like => 
+	                   join ($sep, $self->get_column ($path_col), '%') } )->first;
+}
+
 1;
