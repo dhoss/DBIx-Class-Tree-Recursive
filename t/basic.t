@@ -11,11 +11,9 @@ my $rs = $schema->resultset ('Test');
 
 my $chief = $rs->create ({
   name => 'grand chief',
-  
 });
-my $parent = $chief->get_parent;
-my $path   = $chief->get_column($chief->path_column);
-ok ( check_rs( qw("", 1), qw($parent, $path) ), "Initial state" );
+
+ok ( check_rs( $rs, [0, 1] ), "Initial state" );
 
 ## need to check positions of parents and children somehow.
 ##01:55 <@ribasushi> write a function which will take an arrayref of 
@@ -29,23 +27,22 @@ ok ( check_rs( qw("", 1), qw($parent, $path) ), "Initial state" );
  ##                  get flux in the rows)
 ##01:56 <@ribasushi> done
 sub check_rs {
-	my ($self, $expected_position_pairs, $actual_position_pairs) = @_;
+	my ($rs, $expected_position_pairs) = @_;
 	
 	my $expected_parent   = $expected_position_pairs->[0];
 	my $expected_position = $expected_position_pairs->[1];
-	my $actual_parent     = $actual_position_pairs->[0];
-	my $actual_position   = $actual_position_pairs->[1];
+	my $actual_parent     = $chief->get_parent;
+	my $actual_position   = $chief->get_column($chief->path_column);
 	print "Expected Parent: $expected_parent\n";
 	print "Expected Position: $expected_position\n";
 	print "Actual Parent: $actual_parent\n";
 	print "Actual Position: $actual_position\n";
 	if ( 
-		[$expected_parent, $expected_position] eq 
-		[$actual_parent,   $actual_position] ) {
-			return 1;
-		} else {
+		($expected_parent, $expected_position) != 
+		($actual_parent,   $actual_position) ) {
 			return 0;
 	}
+	return 1;
 	
 }
 
