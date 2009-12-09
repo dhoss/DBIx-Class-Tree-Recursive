@@ -58,7 +58,7 @@ ok( check_rs ($rs, [2, 1.1.1]), 'promote a rookie to a subordinate' );
 sub check_rs {
 	my ($rs, $expected_position_pairs) = @_;
 	#$rs->reset;
-	my $expected_parent   = $expected_position_pairs->[0];
+	my $expected_parent   = $expected_position_pairs->[0] || "none";
 	my $expected_position = $expected_position_pairs->[1];
 	print "Expected Parent: $expected_parent\n";
 	print "Expected Position: $expected_position\n";
