@@ -51,7 +51,7 @@ sub get_parent {
   my $pcol = $self->parent_column;
   return $self->result_source->resultset->find(
     $self->get_column ($pcol)
-  ) || 0;
+  );
 }
  
 sub _position_from_value {

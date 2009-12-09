@@ -46,6 +46,9 @@ my $sub2id = $rs->find ({name => 'subordinate 2'})->id;
 $rs->find ({name => 'rookie 1.2'})->move_to_group($sub2id);
 dump_rs ($rs, 'This guy is retarded, demote to last subordinate of 2nd subordinate');
 
+#print "Idiot's parent:" . $rs->find ({name => 'rookie 1.2'})->get_parent;
+#print "\n";
+
 print "How many parents does the idiot have: " . $rs->find ({name => 'rookie 1.2'})->all_parents->count;
 print "\n";
 
