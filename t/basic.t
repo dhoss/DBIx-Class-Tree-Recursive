@@ -11,80 +11,42 @@ my $rs = $schema->resultset ('Test');
 
 my $chief = $rs->create ({
   name => 'grand chief',
-  children => [
-    {
-      name => 'subordinate 1',
-      children => [
-        map { { name => 'rookie 1.' . $_ } } qw/1 2 3/,
-      ],
-    },
-    {
-      name => 'subordinate 2',
-      children => [
-        map { { name => 'rookie 2.' . $_ } } qw/1 2/,
-      ],
-    },
-  ]
+  
 });
-
-dump_rs ($rs, 'initial state');
-
-$rs->find ({name => 'rookie 1.2'})->update ({ parent_id => $chief->id });
-dump_rs ($rs, 'promote a rookie to a subordinate');
-
-$rs->find ({name => 'rookie 1.2'})->move_to(1);
-dump_rs ($rs, 'make this same rookie 1st subordinate');
-
-$rs->find ({name => 'rookie 1.2'})->move_to_group(undef, 1);
-dump_rs ($rs, 'damn he is good - promote him to FIRST chief (this time use move_to_group)');
-
-$rs->find ({name => 'rookie 1.2'})->move_to(2);
-dump_rs ($rs, 'not that good - make 2nd chief');
-
-my $sub2id = $rs->find ({name => 'subordinate 2'})->id;
-
-$rs->find ({name => 'rookie 1.2'})->move_to_group($sub2id);
-dump_rs ($rs, 'This guy is retarded, demote to last subordinate of 2nd subordinate');
-
-print "How many parents does the idiot have: " . $rs->find ({name => 'rookie 1.2'})->all_parents->count;
-print "\n";
-
-print "How many children does the chief have besides the retard: " . $chief->get_direct_children->count;
-print "\n";
-print "Direct child of the chief: " . $chief->get_immediate_child->name;
-print "\n";
-print "Direct child of first subordinate: " . $rs->find ({name => 'subordinate 1'})->get_immediate_child->name;
-print "\n";
-sub dump_rs {
-  my ($rs, $desc) = @_;
-
-  print "-------\n$desc\n-------\n";
-  print join ("\t", qw/id unit_name parent path/, "\n");
-  for ($rs->cursor->all) {
-    print join ("\t", map { defined $_ ? $_ : 'NULL' } @$_, "\n");
-  }
-
-  print "\n\n";
-}
-
-
-## we need to check a given items parents and children to make sure the positioning
-## is correct
-sub check_rs {
-    my( $rs ) = @_;
-    $rs->reset();
-    my $position_column = $rs->result_class->position_column();
-    my $expected_position = 0;
-    while (my $row = $rs->next()) {
-        $expected_position ++;
-        if ($row->get_column($position_column)!=$expected_position) {
-            return 0;
-        }
-    }
-    return 1;
-}
+my $parent = $chief->get_parent;
+my $path   = $chief->get_column($chief->path_column);
+ok ( check_rs( qw("", 1), qw($parent, $path) ), "Initial state" );
 
 ## need to check positions of parents and children somehow.
-## so, check_rs($parent_position, $child_position, $actual_position)
+##01:55 <@ribasushi> write a function which will take an arrayref of 
+##                   parent/position pairs
+##01:55 <@ribasushi> and compare it to the current resultset
+##01:55 < dhoss> oh
+##01:55 < dhoss> thinking too hard.
+##01:55 <@ribasushi> and in the tests supply the arrayref of what you expect to 
+##                   see in the table
+##01:56 <@ribasushi> always have the rs ordered by the autoinc id (so you don't 
+ ##                  get flux in the rows)
+##01:56 <@ribasushi> done
+sub check_rs {
+	my ($self, $expected_position_pairs, $actual_position_pairs) = @_;
+	
+	my $expected_parent   = $expected_position_pairs->[0];
+	my $expected_position = $expected_position_pairs->[1];
+	my $actual_parent     = $actual_position_pairs->[0];
+	my $actual_position   = $actual_position_pairs->[1];
+	print "Expected Parent: $expected_parent\n";
+	print "Expected Position: $expected_position\n";
+	print "Actual Parent: $actual_parent\n";
+	print "Actual Position: $actual_position\n";
+	if ( 
+		[$expected_parent, $expected_position] eq 
+		[$actual_parent,   $actual_position] ) {
+			return 1;
+		} else {
+			return 0;
+	}
+	
+}
 
-done_testing;
+done_testing();
