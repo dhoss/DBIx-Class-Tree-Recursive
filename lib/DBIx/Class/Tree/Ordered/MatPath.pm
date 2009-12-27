@@ -46,7 +46,7 @@ sub all_children {
   });
 }
  
-sub get_parent {
+sub parent {
   my $self = shift;
   my $pcol = $self->parent_column;
   return $self->result_source->resultset->find(
@@ -64,7 +64,7 @@ sub _position_from_value {
 sub _position_value {
   my ($self, $pos) = @_;
  
-  my $p = $self->get_parent
+  my $p = $self->parent
     or return $pos;
  
   return join ($self->path_separator, $p->get_column($p->path_column), $pos);
@@ -76,7 +76,7 @@ sub _initial_position_value {
  
   my $init = $self->next::method;
  
-  my $p = $self->get_parent
+  my $p = $self->parent
     or return $init;
  
   return join ($p->path_separator, $p->get_column($p->path_column), $init );
@@ -133,7 +133,7 @@ sub _shift_siblings {
  
 ## direct children:
 ## all_children->search (... -not_like => 'path $sep % $sep %
-sub get_direct_children {
+sub direct_children {
 	my $self = shift;
 
 	my $path_col = $self->path_column;
@@ -144,10 +144,6 @@ sub get_direct_children {
 	                   join ($sep, $self->get_column ($path_col), '%', '%') } );
 }
 
-sub get_immediate_child {
-	my $self = shift;
-	
-	return $self->get_direct_children->first;
-}
 
+sub add_child {}
 1;
