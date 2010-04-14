@@ -3,10 +3,10 @@ package DBIx::Class::Tree::Ordered::MatPath;
 use warnings;
 use strict;
  
-use base qw/DBIx::Class::Ordered/;
+use parent qw/DBIx::Class::Ordered/;
  
 sub parent_column { shift->grouping_column (@_) }
-sub path_column { shift->position_column (@_) }
+sub path_column   { shift->position_column (@_) }
  
 __PACKAGE__->mk_classdata ('escaped_separator');
 __PACKAGE__->mk_classdata (path_separator => '.');
@@ -40,9 +40,13 @@ sub all_children {
  
   my $path_col = $self->path_column;
   my $sep = $self->path_separator;
- 
+  my $path = $self->get_column($path_col);
+  $path = '' if $path eq $sep; 
   return $self->result_source->resultset->search({
-    $path_col => { -like => join ($sep, $self->get_column($path_col),'%') },
+    '-and' => [
+       { "me.$path_col" => { '!=', $self->get_column($path_col) } },
+       { "me.$path_col" => { -like => join ($sep, $path,'%') } },
+    ]
   });
 }
  
@@ -134,14 +138,17 @@ sub _shift_siblings {
 ## direct children:
 ## all_children->search (... -not_like => 'path $sep % $sep %
 sub direct_children {
-	my $self = shift;
+    my $self = shift;
 
 	my $path_col = $self->path_column;
 	my $sep = $self->path_separator;
-	
-	return $self->all_children->search ( 
-		$path_col => { -not_like => 
-	                   join ($sep, $self->get_column ($path_col), '%', '%') } );
+
+    my $match = join($sep, $self->get_column($path_col), '%', $sep,'%');
+    $match =~ s/($sep)+/$sep/g;
+
+	return $self->all_children->search({
+	    "me.$path_col" => { '-not_like' => $match }
+    });
 }
 
 
