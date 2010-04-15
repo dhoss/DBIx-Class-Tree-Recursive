@@ -46,10 +46,8 @@ ok(
     "promote him to FIRST chief (this time use move_to_group)"
 );
 
-#dump_rs ($rs, 'damn he is good - ');
-
-#$rs->find ({name => 'rookie 1.2'})->move_to(2);
-#dump_rs ($rs, 'not that good - make 2nd chief');
+$rs->find( { name => 'rookie 1.2' } )->move_to(2);
+ok( check_rs( $rs->find( { path => 2 } ), [ undef, 2 ] ), 'not that good - make 2nd chief' );
 
 #my $sub2id = $rs->find ({name => 'subordinate 2'})->id;
 
