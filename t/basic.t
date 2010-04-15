@@ -26,7 +26,7 @@ my $chief = $rs->create(
 
 ok( check_rs( $chief, [ undef, 1 ] ) );
 
-#ok( check_rs( $chief->resultset->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ) );
+ok( check_rs( $rs->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ) );
 
 #ok ( check_rs( $rs, [ "1", "1.1"  ] ), "First subordinate" );
 #ok ( check_rs( $rs, [ "1.1", "1.1.1"  ] ), "First child" );
