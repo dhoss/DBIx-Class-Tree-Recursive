@@ -28,7 +28,7 @@ ok( check_rs( $chief, [ undef, 1 ] ), "initial state" );
 
 ok( check_rs( $rs->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ), "first subordinate" );
 
-ok( check_rs( $rs->find( { name => "subordinate 2" } ), [ "1.1", "1.1.1" ] ), "second subordinate" );
+ok( check_rs( $rs->find( { name => "subordinate 2" } ), [ 1, "1.2" ] ), "second subordinate" );
 
 #ok ( check_rs( $rs, [ "1.1", "1.1.2"  ] ), "Second child" );
 #ok ( check_rs( $rs, [ "1.1", "1.1.3"  ] ), "Third child" );
