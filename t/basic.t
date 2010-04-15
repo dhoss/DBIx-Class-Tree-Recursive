@@ -31,7 +31,7 @@ ok( check_rs( $rs->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ), "first s
 ok( check_rs( $rs->find( { name => "subordinate 2" } ), [ 1, "1.2" ] ), "second subordinate" );
 
 ok ( check_rs( $rs->find( { path => "1.1.1" } ), [ "1.1", "1.1.1"  ] ), "first child" );
-#ok ( check_rs( $rs, [ "1.1", "1.1.2"  ] ), "second child" );
+ok ( check_rs( $rs->find( { path => "1.1.2" } ), [ "1.1", "1.1.2"  ] ), "second child" );
 #$rs->find ({name => 'rookie 1.2'})->update ({ parent_id => $chief->id });
 #ok( check_rs ($rs, [1.1, 1.1.1]), 'promote a rookie to a subordinate' );
 
