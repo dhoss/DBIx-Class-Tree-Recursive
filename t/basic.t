@@ -49,9 +49,13 @@ ok(
 $rs->find( { name => 'rookie 1.2' } )->move_to(2);
 ok( check_rs( $rs->find( { path => 2 } ), [ undef, 2 ] ), 'not that good - make 2nd chief' );
 
-#my $sub2id = $rs->find ({name => 'subordinate 2'})->id;
+my $sub2id = $rs->find( { name => 'subordinate 2' } )->id;
 
-#$rs->find ({name => 'rookie 1.2'})->move_to_group($sub2id);
+$rs->find( { name => 'rookie 1.2' } )->move_to_group($sub2id);
+warn "path: " . $rs->find( { name => 'rookie 1.2' } )->path;
+warn "parent: " . $rs->find( { name => 'rookie 1.2' } )->parent->path;
+ok( check_rs( $rs->find( { name => 'rookie 1.2' } ), [ "1.1", "1.1.3" ] ),
+    "moved to second sub of first chief" );
 
 sub check_rs {
     my ( $node, $expected_pairs ) = @_;
