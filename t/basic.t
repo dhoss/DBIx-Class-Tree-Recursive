@@ -40,8 +40,13 @@ ok( check_rs( $rs->find( { path => 1.1 } ), [ 1, 1.1 ] ), 'promote a rookie to a
 $rs->find( { name => 'rookie 1.2' } )->move_to(1);
 ok( check_rs( $rs->find( { path => 1.1 } ), [ 1, 1.1 ] ), 'make this same rookie 1st subordinate' );
 
-#$rs->find ({name => 'rookie 1.2'})->move_to_group(undef, 1);
-#dump_rs ($rs, 'damn he is good - promote him to FIRST chief (this time use move_to_group)');
+$rs->find( { name => 'rookie 1.2' } )->move_to_group( undef, 1 );
+ok(
+    check_rs( $rs->find( { path => 1 } ), [ undef, 1 ] ),
+    "promote him to FIRST chief (this time use move_to_group)"
+);
+
+#dump_rs ($rs, 'damn he is good - ');
 
 #$rs->find ({name => 'rookie 1.2'})->move_to(2);
 #dump_rs ($rs, 'not that good - make 2nd chief');
@@ -63,17 +68,17 @@ sub check_rs {
 
     ## check to make sure the parent is correct, and the path is correct
     $node->discard_changes;
-    my $expected_first = ( $expected_pairs->[0] eq undef ) ? "null" : $expected_pairs->[0];
-    warn "expected pair: 1: " . $expected_first . ", 2: " . $expected_pairs->[1];
-    my $path = ( $node->parent && $node->parent->path ) || "null";
+    my $expected_first = ( $expected_pairs->[0] eq undef ) ? " null " : $expected_pairs->[0];
+    warn " expected pair : 1 : " . $expected_first . ", 2 : " . $expected_pairs->[1];
+    my $path = ( $node->parent && $node->parent->path ) || " null ";
     unless ( ( $path eq $expected_first )
         && ( $node->path eq $expected_pairs->[1] ) )
     {
-        warn "got to return 0";
+        warn " got to return 0 ";
         return 0;
     }
 
-    warn "got to return 1";
+    warn " got to return 1 ";
     return 1;
 
 }
