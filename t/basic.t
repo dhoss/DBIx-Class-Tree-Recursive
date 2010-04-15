@@ -3,30 +3,31 @@ use warnings;
 use Test::More;
 use lib "t/lib";
 use Schema;
-my $schema = Schema->connect ('dbi:SQLite::memory:');
+my $schema = Schema->connect('dbi:SQLite::memory:');
 
 $schema->deploy;
-my $rs = $schema->resultset ('Test');
+my $rs = $schema->resultset('Test');
 
-my $chief = $rs->create ({
-  name => 'grand chief',
-  #children => [
-   # {
-      #name => 'subordinate 1',
-     # children => [
-    #    map { { name => 'rookie 1.' . $_ } } qw/1 2 3/,
-   #   ],
-  #  },
-  #  {
-  #    name => 'subordinate 2',
-  #    children => [
-  #      map { { name => 'rookie 2.' . $_ } } qw/1 2/,
-  #    ],
-  #  },
- # ]
-});
+my $chief = $rs->create(
+    {
+        name     => 'grand chief',
+        children => [
+            {
+                name     => 'subordinate 1',
+                children => [ map { { name => 'rookie 1.' . $_ } } qw/1 2 3/, ],
+            },
+            {
+                name     => 'subordinate 2',
+                children => [ map { { name => 'rookie 2.' . $_ } } qw/1 2/, ],
+            },
+        ]
+    }
+);
 
-ok ( check_rs( $rs, [ [ undef, 1 ] ] ), "Initial state" );
+ok( check_rs( $chief, [ undef, 1 ] ) );
+
+#ok( check_rs( $chief->resultset->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ) );
+
 #ok ( check_rs( $rs, [ "1", "1.1"  ] ), "First subordinate" );
 #ok ( check_rs( $rs, [ "1.1", "1.1.1"  ] ), "First child" );
 #ok ( check_rs( $rs, [ "1.1", "1.1.2"  ] ), "Second child" );
@@ -48,41 +49,31 @@ ok ( check_rs( $rs, [ [ undef, 1 ] ] ), "Initial state" );
 #$rs->find ({name => 'rookie 1.2'})->move_to_group($sub2id);
 
 sub check_rs {
-	my ($rs, $expected_position_pairs) = @_;
-#	10:10 <@ribasushi> dhoss: that'll do too, but I was suggesting more explicitness
-#	10:10 < dhoss> how so?
-#	10:10 <@ribasushi> i.e. check_rs ($rs, [  [1,1], [2, '1.1'], [3, '1.2' ] ] )...
-#	10:12 <@ribasushi> what you really want is to set a relationship on the test 
-#	                   schema
-#	10:12 <@ribasushi> which will give you an independent way to get the parent
-#	10:12 <@ribasushi> then you check if $row->path contains $row->parent->path
-	
-	my $actual_parent;
-	my $actual_path;
-	my ($x, $y) = 0;
-	my $expected_parent;
-	my $expected_position;
-	while ( my $row = $rs->next ) {
-		$expected_parent   = $expected_position_pairs->[$x];
-		$expected_position =  $expected_position_pairs->[$x][$y];
-		$expected_parent ||= "none";
-		print "Expected Parent: $expected_parent\n";
-		print "Expected Position: $expected_position\n";
-		$actual_parent = $row->get_column($rs->result_class->path_column) ne "1" ? $row->parent->path : "none";
-		$actual_path   = $row->get_column($rs->result_class->path_column);
-		print "Actual Parent: "   . $actual_parent . "\n";
-		print "Actual Position: " .  $row->get_column($rs->result_class->path_column) . "\n";
-		if ( 
-			( $expected_parent, $expected_position ) ne 
-			( $actual_parent,   $actual_path       ) ) {
-				return 0;
-		}
-		$x++, $y++;
-		
-	}
-    
-	return 1;
-	
+    my ( $node, $expected_pairs ) = @_;
+
+    #	10:10 <@ribasushi> dhoss: that'll do too, but I was suggesting more explicitness
+    #	10:10 < dhoss> how so?
+    #	10:10 <@ribasushi> i.e. check_rs ($rs, [  [1,1], [2, '1.1'], [3, '1.2' ] ] )...
+    #	10:12 <@ribasushi> what you really want is to set a relationship on the test
+    #	                   schema
+    #	10:12 <@ribasushi> which will give you an independent way to get the parent
+    #	10:12 <@ribasushi> then you check if $row->path contains $row->parent->path
+
+    ## check to make sure the parent is correct, and the path is correct
+    $node->discard_changes;
+    my $expected_first = ( $expected_pairs->[0] eq undef ) ? "null" : $expected_pairs->[0];
+    warn "expected pair: 1: " . $expected_first . ", 2: " . $expected_pairs->[1];
+    my $path = ($node->parent && $node->parent->path) || "null";
+    unless ( ( $path eq $expected_first )
+        && ( $node->path eq $expected_pairs->[1] ) )
+    {
+        warn "got to return 0";
+        return 0;
+    }
+
+    warn "got to return 1";
+    return 1;
+
 }
 
 done_testing();
