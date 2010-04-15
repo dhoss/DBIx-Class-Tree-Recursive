@@ -24,12 +24,12 @@ my $chief = $rs->create(
     }
 );
 
-ok( check_rs( $chief, [ undef, 1 ] ) );
+ok( check_rs( $chief, [ undef, 1 ] ), "initial state" );
 
-ok( check_rs( $rs->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ) );
+ok( check_rs( $rs->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ), "first subordinate" );
 
-#ok ( check_rs( $rs, [ "1", "1.1"  ] ), "First subordinate" );
-#ok ( check_rs( $rs, [ "1.1", "1.1.1"  ] ), "First child" );
+ok( check_rs( $rs->find( { name => "subordinate 2" } ), [ "1.1", "1.1.1" ] ), "second subordinate" );
+
 #ok ( check_rs( $rs, [ "1.1", "1.1.2"  ] ), "Second child" );
 #ok ( check_rs( $rs, [ "1.1", "1.1.3"  ] ), "Third child" );
 #$rs->find ({name => 'rookie 1.2'})->update ({ parent_id => $chief->id });
@@ -63,7 +63,7 @@ sub check_rs {
     $node->discard_changes;
     my $expected_first = ( $expected_pairs->[0] eq undef ) ? "null" : $expected_pairs->[0];
     warn "expected pair: 1: " . $expected_first . ", 2: " . $expected_pairs->[1];
-    my $path = ($node->parent && $node->parent->path) || "null";
+    my $path = ( $node->parent && $node->parent->path ) || "null";
     unless ( ( $path eq $expected_first )
         && ( $node->path eq $expected_pairs->[1] ) )
     {
