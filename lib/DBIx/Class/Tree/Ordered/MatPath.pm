@@ -41,10 +41,10 @@ sub all_children {
   my $path_col = $self->path_column;
   my $sep = $self->path_separator;
   my $path = $self->get_column($path_col);
-  $path = '' if $path eq $sep; 
+
   return $self->result_source->resultset->search({
     '-and' => [
-       { "me.$path_col" => { '!=', $self->get_column($path_col) } },
+#       { "me.$path_col" => { '!=', $path } },
        { "me.$path_col" => { -like => join ($sep, $path,'%') } },
     ]
   });
@@ -54,7 +54,7 @@ sub parent {
   my $self = shift;
   my $pcol = $self->parent_column;
   return $self->result_source->resultset->find(
-    $self->get_column ($pcol)
+    { parent_column => $self->get_column ($pcol) }
   );
 }
  
@@ -144,11 +144,13 @@ sub direct_children {
 	my $sep = $self->path_separator;
 
     my $match = join($sep, $self->get_column($path_col), '%', $sep,'%');
-    $match =~ s/($sep)+/$sep/g;
 
-	return $self->all_children->search({
-	    "me.$path_col" => { '-not_like' => $match }
-    });
+    return $self->result_source->resultset->search({
+      '-and' => [
+       { "me.$path_col" => { -like => "${path_col}${sep}%" } },
+       { "me.$path_col" => { -not_like => "${path_col}${sep}%${sep}%" } }, # <-- note the difference
+      ]
+     });
 }
 
 
