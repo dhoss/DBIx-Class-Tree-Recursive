@@ -152,5 +152,4 @@ sub direct_children {
 }
 
 
-sub add_child {}
 1;
