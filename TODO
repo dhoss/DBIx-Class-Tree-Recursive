@@ -1,7 +1,4 @@
 Test deletes?
-fix ->parent 
- - (find with a single arg? pfft)
- - undef if $pcol is undef
 
 direct_children should be
  - no regex $match =~ s/($sep)+/$sep/g
