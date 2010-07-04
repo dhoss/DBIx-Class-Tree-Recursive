@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 use lib "t/lib";
 use Schema;
+use Data::Dumper;
 my $schema = Schema->connect('dbi:SQLite::memory:');
 
 $schema->deploy;
@@ -52,11 +53,17 @@ ok( check_rs( $rs->find( { path => 2 } ), [ undef, 2 ] ), 'not that good - make 
 my $sub2id = $rs->find( { name => 'subordinate 2' } )->id;
 
 $rs->find( { name => 'rookie 1.2' } )->move_to_group($sub2id);
-warn "path: " . $rs->find( { name => 'rookie 1.2' } )->path;
-warn "parent: " . $rs->find( { name => 'rookie 1.2' } )->parent->path;
 ok( check_rs( $rs->find( { name => 'rookie 1.2' } ), [ "1.1", "1.1.3" ] ),
     "moved to second sub of first chief" );
 
+## ought to modify check_rs to handle this
+my @direct_children;
+for my $child ( $rs->find( { name => 'subordinate 1' })->direct_children ) {
+    push @direct_children, $child->path;
+}
+
+my @should_have_children_paths = ( "1.1.1", "1.1.3", "1.1.2", "1.1.1", "1.1.2" );
+is_deeply( \@direct_children, \@should_have_children_paths, "paths match for direct children");
 sub check_rs {
     my ( $node, $expected_pairs ) = @_;
 
