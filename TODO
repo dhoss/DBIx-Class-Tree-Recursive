@@ -1,5 +1,1 @@
 Test deletes?
-
-direct_children should be
- - no regex $match =~ s/($sep)+/$sep/g
- - clean up join(): join($sep, $self->get_column($path_col), '%', $sep,'%');
