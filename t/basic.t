@@ -70,7 +70,7 @@ sub check_rs {
 
     ## check to make sure the parent is correct, and the path is correct
     $node->discard_changes;
-    my $expected_first = ( $expected_pairs->[0] eq undef ) ? " null " : $expected_pairs->[0];
+    my $expected_first = !( $expected_pairs->[0] ) ? " null " : $expected_pairs->[0];
     my $path = ( $node->parent && $node->parent->path ) || " null ";
     unless ( ( $path eq $expected_first )
         && ( $node->path eq $expected_pairs->[1] ) )

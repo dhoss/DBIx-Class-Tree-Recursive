@@ -53,9 +53,11 @@ sub all_children {
 sub parent {
   my $self = shift;
   my $pcol = $self->parent_column;
-  return $self->result_source->resultset->find(
-    $self->get_column ($pcol)
-  );
+  if ( $pcol == undef ) {
+      return undef;
+  } else {
+      return $pcol;
+  }
 }
  
 sub _position_from_value {
