@@ -42,22 +42,32 @@ sub all_children {
   my $sep = $self->path_separator;
   my $path = $self->get_column($path_col);
   $path = '' if $path eq $sep; 
-  return $self->result_source->resultset->search({
+
+  my $rs = $self->result_source->resultset;
+  my $alias = $rs->current_source_alias;
+  return $rs->search({
     '-and' => [
-       { "me.$path_col" => { '!=', $self->get_column($path_col) } },
-       { "me.$path_col" => { -like => join ($sep, $path,'%') } },
+       { "$alias.$path_col" => { '!=', $self->get_column($path_col) } },
+       { "$alias.$path_col" => { -like => join ($sep, $path,'%') } },
     ]
   });
 }
- 
+
+# we could search based on the group/parent column, but it is optional,
+# thus just work off the path
+# Also the fact that this "passed" for you before, implies you don't test
+# half of the functionaliy (there is no way things could have worked)
 sub parent {
   my $self = shift;
-  my $pcol = $self->parent_column;
-  if ( $pcol == undef ) {
-      return undef;
-  } else {
-      return $pcol;
-  }
+
+  my $path_col = $self->path_column;
+  my $esep = $self->escaped_separator;
+
+  my $path = $self->get_column ($path_col);
+  $path =~ s/ $esep [^$esep]+ $ //x # strip our part of the path
+    or return undef;                # or if nothing to strip we are top-level
+
+  return $self->result_source->resultset->find ({ $path_col => $path });
 }
  
 sub _position_from_value {
@@ -139,16 +149,22 @@ sub _shift_siblings {
  
 ## direct children:
 ## all_children->search (... -not_like => 'path $sep % $sep %
+# same here - this could have never worked - means no tests
 sub direct_children {
-    my $self = shift;
+  my $self = shift;
 
-	my $path_col = $self->path_column;
-	my $sep = $self->path_separator;
+  my $path_col = $self->path_column;
+  my $sep = $self->path_separator;
 
-    my $match = join($self->get_column($path_col), '%', $sep,'%');
-	return $self->all_children->search({
-	    "me.$path_col" => { '-not_like' => $match }
-    });
+  my $grandchildren_match = join($sep,
+    $self->get_column($path_col),
+    '%',
+    '%'
+  );
+
+  my $children = $self->all_children;
+  my $alias = $children->current_source_alias;
+  return $children->search ({ "$alias.$path_col" => { -not_like => $grandchildren_match } });
 }
 
 
