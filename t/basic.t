@@ -64,6 +64,10 @@ for my $child ( $rs->find( { name => 'subordinate 1' })->direct_children ) {
 
 my @should_have_children_paths = ( "1.1.1", "1.1.3", "1.1.2", "1.1.1", "1.1.2" );
 is_deeply( \@direct_children, \@should_have_children_paths, "paths match for direct children");
+
+my $parent = $rs->find( { name => 'subordinate 1' })->parent->id;
+cmp_ok ($parent, '==', 1, 'subordinate 1 has parent with path of 1');
+
 sub check_rs {
     my ( $node, $expected_pairs ) = @_;
 
