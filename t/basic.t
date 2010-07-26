@@ -26,33 +26,42 @@ my $chief = $rs->create(
 );
 
 ok( check_rs( $chief, [ undef, 1 ] ), "initial state" );
+ok ( !defined $chief->parent, "chief has no parent");
 
-ok( check_rs( $rs->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ), "first subordinate" );
+ok( check_rs(  my $first = $rs->find( { name => "subordinate 1" } ), [ 1, "1.1" ] ), "first subordinate" );
+cmp_ok ( $first->parent->id, '==', $chief->id, 'first subordinate has chief as parent');
 
-ok( check_rs( $rs->find( { name => "subordinate 2" } ), [ 1, "1.2" ] ), "second subordinate" );
+ok( check_rs(  my $second = $rs->find( { name => "subordinate 2" } ), [ 1, "1.2" ] ), "second subordinate" );
+cmp_ok( $second->parent->id, '==', $chief->id, 'second subordinate has chief as parent');
 
-ok( check_rs( $rs->find( { path => "1.1.1" } ), [ "1.1", "1.1.1" ] ), "first child" );
-ok( check_rs( $rs->find( { path => "1.1.2" } ), [ "1.1", "1.1.2" ] ), "second child" );
+ok( check_rs( my $child1 = $rs->find( { path => "1.1.1" } ), [ "1.1", "1.1.1" ] ), "first child" );
+cmp_ok( $child1->parent->id, '==', $first->id, "child 1 has subordinate 1 as a parent");
+
+
+ok( check_rs( my $child2 = $rs->find( { path => "1.1.2" } ), [ "1.1", "1.1.2" ] ), "second child" );
+cmp_ok( $child2->parent->id, '==', $first->id, "child 2 has subordinate 1 as a parent");
+
 
 # move shit around
-$rs->find( { name => 'rookie 1.2' } )->update( { parent_id => $chief->id } );
+$child1->update( { parent_id => $first->id } );
 ok( check_rs( $rs->find( { path => 1.1 } ), [ 1, 1.1 ] ), 'promote a rookie to a subordinate' );
+cmp_ok( $child1->parent->id, '==', $first->id, "child 1 has chief  as a parent");
 
-$rs->find( { name => 'rookie 1.2' } )->move_to(1);
+$child1->move_to(1);
 ok( check_rs( $rs->find( { path => 1.1 } ), [ 1, 1.1 ] ), 'make this same rookie 1st subordinate' );
-
-$rs->find( { name => 'rookie 1.2' } )->move_to_group( undef, 1 );
+warn "child1 path after FIRST move: ". $child1->path;
+$child1->move_to_group( undef, 1 );
 ok(
     check_rs( $rs->find( { path => 1 } ), [ undef, 1 ] ),
     "promote him to FIRST chief (this time use move_to_group)"
 );
-
-$rs->find( { name => 'rookie 1.2' } )->move_to(2);
+warn "child1 path after move to group: " . $child1->path;
+$child1->move_to(2);  ## issues here
+warn "Child1 path after child1->move_to:" . $child1->path;
 ok( check_rs( $rs->find( { path => 2 } ), [ undef, 2 ] ), 'not that good - make 2nd chief' );
-
 my $sub2id = $rs->find( { name => 'subordinate 2' } )->id;
 
-$rs->find( { name => 'rookie 1.2' } )->move_to_group($sub2id);
+$child2->move_to_group($sub2id);
 ok( check_rs( $rs->find( { name => 'rookie 1.2' } ), [ "1.1", "1.1.3" ] ),
     "moved to second sub of first chief" );
 
@@ -65,8 +74,6 @@ for my $child ( $rs->find( { name => 'subordinate 1' })->direct_children ) {
 my @should_have_children_paths = ( "1.1.1", "1.1.3", "1.1.2", "1.1.1", "1.1.2" );
 is_deeply( \@direct_children, \@should_have_children_paths, "paths match for direct children");
 
-my $parent = $rs->find( { name => 'subordinate 1' })->parent->id;
-cmp_ok ($parent, '==', 1, 'subordinate 1 has parent with path of 1');
 
 sub check_rs {
     my ( $node, $expected_pairs ) = @_;
