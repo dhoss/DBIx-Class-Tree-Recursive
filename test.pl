@@ -62,8 +62,8 @@ sub dump_rs {
   my ($rs, $desc) = @_;
   
   print "-------\n$desc\n-------\n";
-  print join ("\t", qw/id unit_name parent path/, "\n");
-  for ($rs->search({}, { order_by => 'parent_id DESC' })->cursor->all) {
+  print join ("\t\t", qw/ id name parent path/, "\n");
+  for ($rs->search({}, { columns => [qw/ id name parent_id path/], order_by => 'parent_id DESC' })->cursor->all) {
     print join ("\t", map { defined $_ ? $_ : 'NULL' } @$_, "\n");
   }
 
