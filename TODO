@@ -1,1 +1,5 @@
-Test deletes?
+9-7-2010
+=========
+ - test deletes
+ - confirm that paths are correct when things are reparented, moved, etc
+ - search by id, as well as name
