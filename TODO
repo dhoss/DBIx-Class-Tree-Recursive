@@ -3,3 +3,5 @@
  - test deletes
  - confirm that paths are correct when things are reparented, moved, etc
  - search by id, as well as name
+ - switch back to FULL rs examination
+ - fix this path bug
