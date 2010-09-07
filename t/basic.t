@@ -49,15 +49,15 @@ cmp_ok( $child1->parent->id, '==', $first->id, "child 1 has chief  as a parent")
 
 $child1->move_to(1);
 ok( check_rs( $rs->find( { path => 1.1 } ), [ 1, 1.1 ] ), 'make this same rookie 1st subordinate' );
-warn "child1 path after FIRST move: ". $child1->path;
+warn $child1->name. " path after FIRST move: ". $child1->path . " and parent: " . $child1->parent->id;;
 $child1->move_to_group( undef, 1 );
 ok(
     check_rs( $rs->find( { path => 1 } ), [ undef, 1 ] ),
     "promote him to FIRST chief (this time use move_to_group)"
 );
-warn "child1 path after move to group: " . $child1->path;
+warn $child1->name . " path after move to group: " . $child1->path. " and parent: " . $child1->parent->id;;
 $child1->move_to(2);  ## issues here
-warn "Child1 path after child1->move_to:" . $child1->path;
+warn $child1->name. " path after child1->move_to:" . $child1->path . " and parent: " . $child1->parent->id;
 
 ok( check_rs( $rs->find( { path => 2 } ), [ undef, 2 ] ), 'not that good - make 2nd chief' );
 my $sub2id = $rs->find( { name => 'subordinate 2' } )->id;
@@ -78,7 +78,7 @@ is_deeply( \@direct_children, \@should_have_children_paths, "paths match for dir
 
 sub check_rs {
     my ( $node, $expected_pairs ) = @_;
-    warn "Node:" .  Dumper $node;
+    
     #	10:10 <@ribasushi> dhoss: that'll do too, but I was suggesting more explicitness
     #	10:10 < dhoss> how so?
     #	10:10 <@ribasushi> i.e. check_rs ($rs, [  [1,1], [2, '1.1'], [3, '1.2' ] ] )...

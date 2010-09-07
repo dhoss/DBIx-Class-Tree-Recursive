@@ -52,18 +52,18 @@ dump_rs ($rs, 'This guy is retarded, demote to last subordinate of 2nd subordina
 print "How many parents does the idiot have: " . $rs->find ({name => 'rookie 1.2'})->all_parents->count;
 print "\n";
 
-print "How many children does the chief have besides the retard: " . $chief->get_direct_children->count;
+print "How many children does the chief have besides the retard: " . $chief->direct_children->count;
 print "\n";
-print "Direct child of the chief: " . $chief->get_immediate_child->name;
+print "Direct child of the chief: " . $chief->direct_children->first->name;
 print "\n";
-print "Direct child of first subordinate: " . $rs->find ({name => 'subordinate 1'})->get_immediate_child->name;
+print "Direct child of first subordinate: " . $rs->find ({name => 'subordinate 1'})->direct_children->first->name;
 print "\n";
 sub dump_rs {
   my ($rs, $desc) = @_;
-
+  
   print "-------\n$desc\n-------\n";
   print join ("\t", qw/id unit_name parent path/, "\n");
-  for ($rs->cursor->all) {
+  for ($rs->search({}, { order_by => 'parent_id DESC' })->cursor->all) {
     print join ("\t", map { defined $_ ? $_ : 'NULL' } @$_, "\n");
   }
 
