@@ -24,7 +24,6 @@ my $chief = $rs->create(
         ]
     }
 );
-
 ok(
     check_rs(
         $rs,
@@ -36,9 +35,102 @@ ok(
             [ 2,      1.1.2 ],
             [ 2,      1.1.3 ],
             [ 6,      1.2.1 ],
-            [ 6,      1.2.2 ]
+            [ 6,      1.2.2 ],
         ],
         "initial state"
+    )
+);
+
+$rs->find( { name => "rookie 1.2" } )
+  ->update( { parent_id => $rs->find( { name => "grand chief" } )->id } );
+ok(
+    check_rs(
+        $rs,
+        [
+            [ 6,      1.2.2 ],
+            [ 6,      1.2.1 ],
+            [ 2,      1.1.2 ],
+            [ 2,      1.1.1 ],
+            [ 1,      1.2 ],
+            [ 1,      1.1.2 ],
+            [ 1,      1.1 ],
+            [ "null", 1 ],
+        ],
+        "make rookie 1.2 a subordinate"
+    )
+);
+
+$rs->find( { name => "rookie 1.2" } )->move_to(1);
+ok(
+    check_rs(
+        $rs,
+        [
+            [ 6,      1.2.2 ],
+            [ 6,      1.2.1 ],
+            [ 2,      1.2.2 ],
+            [ 2,      1.2.1 ],
+            [ 1,      1.2 ],
+            [ 1,      1.1 ],
+            [ 1,      1.2 ],
+            [ "null", 1 ],
+        ],
+        "make this same rookie 1st subordinate"
+    )
+);
+
+$rs->find( { name => 'rookie 1.2' } )->move_to_group( undef, 1 );
+ok(
+    check_rs(
+        $rs,
+        [
+            [ 6,      1.1.2 ],
+            [ 6,      1.1.1 ],
+            [ 2,      1.1.2 ],
+            [ 2,      1.1.1 ],
+            [ 1,      1.1 ],
+            [ 1,      1.1 ],
+            [ "null", 1.1 ],
+            [ "null", 1 ],
+        ],
+        "promote him to FIRST chief (this time use move_to_group)"
+    )
+);
+
+$rs->find( { name => 'rookie 1.2' } )->move_to(2);
+ok(
+    check_rs(
+        $rs,
+        [
+            [ 6,      1.1.2 ],
+            [ 6,      1.1.1 ],
+            [ 2,      1.1.2 ],
+            [ 2,      1.1.1 ],
+            [ 1,      1.1 ],
+            [ 1,      1.1 ],
+            [ "null", 2 ],
+            [ "null", 1 ]
+        ],
+        "not that good - make 2nd chief"
+    )
+);
+
+my $sub2id = $rs->find( { name => 'subordinate 2' } )->id;
+
+$rs->find( { name => 'rookie 1.2' } )->move_to_group($sub2id);
+ok(
+    check_rs(
+        $rs,
+        [
+            [ 6,      1.1.2 ],
+            [ 6,      1.1.1 ],
+            [ 6,      1.1.3 ],
+            [ 2,      1.1.2 ],
+            [ 2,      1.1.1 ],
+            [ 1,      1.1 ],
+            [ 1,      1.1 ],
+            [ "null", 1 ],
+        ],
+        "	This guy is retarded, demote to last subordinate of 2nd subordinate"
     )
 );
 
@@ -56,7 +148,11 @@ sub check_rs {
     ## check to make sure the parent is correct, and the path is correct
 
     my @paths;
-    for ( $rs->search( {}, { columns => [qw/path parent_id/] } )->cursor->all )
+    for (
+        $rs->search(
+            {}, { columns => [qw/path parent_id/], order_by => 'id' }
+        )->cursor->all
+      )
     {
         my ( $pos_raw_value, $parent_raw_value ) = @$_;
         $parent_raw_value ||= "null";
