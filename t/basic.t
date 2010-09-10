@@ -28,14 +28,14 @@ ok(
     check_rs(
         $rs,
         [
-            [ "null", 1 ],
-            [ 1,      "1.1" ],
-            [ 2,      "1.1.1" ],
-            [ 2,      "1.1.2" ],
-            [ 2,      "1.1.3" ],
-            [ 1,      "1.2" ],
-            [ 6,      "1.2.1" ],
-            [ 6,      "1.2.2" ],
+            [ "grand chief",   "null", 1 ],
+            [ "subordinate 1", 1,      "1.1" ],
+            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.2",    2,      "1.1.2" ],
+            [ "rookie 1.3",    2,      "1.1.3" ],
+            [ "subordinate 2", 1,      "1.2" ],
+            [ "rookie 2.1",    6,      "1.2.1" ],
+            [ "rookie 2.2",    6,      "1.2.2" ],
 
         ],
         "initial state"
@@ -48,14 +48,14 @@ ok(
     check_rs(
         $rs,
         [
-            [ "null", 1 ],
-            [ 1,      "1.1" ],
-            [ 2,      "1.1.1" ],
-            [ 1,      "1.1.2" ],
-            [ 2,      "1.1.2" ],
-            [ 1,      "1.2" ],
-            [ 6,      "1.2.1" ],
-            [ 6,      "1.2.2" ],
+            [ "grand chief",   "null", 1 ],
+            [ "subordinate 1", 1,      "1.1" ],
+            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.2",    1,      "1.3" ],     # ^
+            [ "rookie 1.3",    2,      "1.1.3" ],
+            [ "subordinate 2", 1,      "1.2" ],
+            [ "rookie 2.1",    6,      "1.2.1" ],
+            [ "rookie 2.2",    6,      "1.2.2" ],
 
         ],
         "make rookie 1.2 a subordinate"
@@ -67,14 +67,14 @@ ok(
     check_rs(
         $rs,
         [
-            [ "null", 1 ],
-            [ 1,      "1.2" ],
-            [ 2,      "1.2.1" ],
-            [ 1,      "1.1" ],
-            [ 2,      "1.2.2" ],
-            [ 1,      "1.2" ],
-            [ 6,      "1.2.1" ],
-            [ 6,      "1.2.2" ],
+            [ "grand chief",   "null", 1 ],
+            [ "subordinate 1", 1,      "1.1" ],
+            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.2",    1,      "1.1" ],     # ^
+            [ "rookie 1.3",    2,      "1.1.3" ],
+            [ "subordinate 2", 1,      "1.2" ],
+            [ "rookie 2.1",    6,      "1.2.1" ],
+            [ "rookie 2.2",    6,      "1.2.2" ],
 
         ],
         "make this same rookie 1st subordinate"
@@ -86,14 +86,14 @@ ok(
     check_rs(
         $rs,
         [
-            [ "null", 1 ],
-            [ 1,      "1.1" ],
-            [ 2,      "1.1.1" ],
-            [ "null", "1.1" ],
-            [ 2,      "1.1.2" ],
-            [ 1,      "1.1" ],
-            [ 6,      "1.1.1" ],
-            [ 6,      "1.1.2" ],
+            [ "grand chief",   "null", 1 ],
+            [ "subordinate 1", 1,      "1.1" ],
+            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.2",    "null", "1" ],       # ^
+            [ "rookie 1.3",    2,      "1.1.3" ],
+            [ "subordinate 2", 1,      "1.2" ],
+            [ "rookie 2.1",    6,      "1.2.1" ],
+            [ "rookie 2.2",    6,      "1.2.2" ],
         ],
         "promote him to FIRST chief (this time use move_to_group)"
     )
@@ -104,14 +104,14 @@ ok(
     check_rs(
         $rs,
         [
-            [ "null", 1 ],
-            [ 1,      "1.1" ],
-            [ 2,      "1.1.1" ],
-            [ "null", 2 ],
-            [ 2,      "1.1.2" ],
-            [ 1,      "1.1" ],
-            [ 6,      "1.1.1" ],
-            [ 6,      "1.1.2" ],
+            [ "grand chief",   "null", 1 ],
+            [ "subordinate 1", 1,      "1.1" ],
+            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.2",    "null", "2" ],       # ^
+            [ "rookie 1.3",    2,      "1.1.3" ],
+            [ "subordinate 2", 1,      "1.2" ],
+            [ "rookie 2.1",    6,      "1.2.1" ],
+            [ "rookie 2.2",    6,      "1.2.2" ],
 
         ],
         "not that good - make 2nd chief"
@@ -125,14 +125,14 @@ ok(
     check_rs(
         $rs,
         [
-            [ "null", 1 ],
-            [ 1,      "1.1" ],
-            [ 2,      "1.1.1" ],
-            [ 6,      "1.1.3" ],
-            [ 2,      "1.1.2" ],
-            [ 1,      "1.1" ],
-            [ 6,      "1.1.1" ],
-            [ 6,      "1.1.2" ],
+            [ "grand chief",   "null", 1 ],
+            [ "subordinate 1", 1,      "1.1" ],
+            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.2",    "1.2",      "1.2.3" ],     # ^
+            [ "rookie 1.3",    2,      "1.1.3" ],
+            [ "subordinate 2", 1,      "1.2" ],
+            [ "rookie 2.1",    6,      "1.2.1" ],
+            [ "rookie 2.2",    6,      "1.2.2" ],
 
         ],
         "This guy is retarded, demote to last subordinate of 2nd subordinate"
@@ -154,15 +154,15 @@ sub check_rs {
 
     my @paths;
     for (
-        $rs->search(
-            {}, { columns => [qw/path parent_id/], order_by => 'id' }
-        )->cursor->all
+        $rs->search( {},
+            { columns => [qw/name path parent_id/], order_by => 'id' } )
+        ->cursor->all
       )
     {
-        my ( $pos_raw_value, $parent_raw_value ) = @$_;
+        my ( $name, $pos_raw_value, $parent_raw_value ) = @$_;
         $parent_raw_value ||= "null";
 
-        push @paths, [ $parent_raw_value, $pos_raw_value ];
+        push @paths, [ $name, $parent_raw_value, $pos_raw_value ];
 
     }
     warn "got:\n"
