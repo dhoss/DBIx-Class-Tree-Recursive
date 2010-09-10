@@ -30,7 +30,7 @@ ok(
         [
             [ "grand chief",   "null", 1 ],
             [ "subordinate 1", 1,      "1.1" ],
-            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.1",   2,      "1.1.1" ],
             [ "rookie 1.2",    2,      "1.1.2" ],
             [ "rookie 1.3",    2,      "1.1.3" ],
             [ "subordinate 2", 1,      "1.2" ],
@@ -50,7 +50,7 @@ ok(
         [
             [ "grand chief",   "null", 1 ],
             [ "subordinate 1", 1,      "1.1" ],
-            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.1",   2,      "1.1.1" ],
             [ "rookie 1.2",    1,      "1.3" ],     # ^
             [ "rookie 1.3",    2,      "1.1.3" ],
             [ "subordinate 2", 1,      "1.2" ],
@@ -69,7 +69,7 @@ ok(
         [
             [ "grand chief",   "null", 1 ],
             [ "subordinate 1", 1,      "1.1" ],
-            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.1",   2,      "1.1.1" ],
             [ "rookie 1.2",    1,      "1.1" ],     # ^
             [ "rookie 1.3",    2,      "1.1.3" ],
             [ "subordinate 2", 1,      "1.2" ],
@@ -88,7 +88,7 @@ ok(
         [
             [ "grand chief",   "null", 1 ],
             [ "subordinate 1", 1,      "1.1" ],
-            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.1",   2,      "1.1.1" ],
             [ "rookie 1.2",    "null", "1" ],       # ^
             [ "rookie 1.3",    2,      "1.1.3" ],
             [ "subordinate 2", 1,      "1.2" ],
@@ -106,7 +106,7 @@ ok(
         [
             [ "grand chief",   "null", 1 ],
             [ "subordinate 1", 1,      "1.1" ],
-            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.1",   2,      "1.1.1" ],
             [ "rookie 1.2",    "null", "2" ],       # ^
             [ "rookie 1.3",    2,      "1.1.3" ],
             [ "subordinate 2", 1,      "1.2" ],
@@ -127,7 +127,7 @@ ok(
         [
             [ "grand chief",   "null", 1 ],
             [ "subordinate 1", 1,      "1.1" ],
-            [ " rookie 1.1",   2,      "1.1.1" ],
+            [ "rookie 1.1",   2,      "1.1.1" ],
             [ "rookie 1.2",    "1.2",      "1.2.3" ],     # ^
             [ "rookie 1.3",    2,      "1.1.3" ],
             [ "subordinate 2", 1,      "1.2" ],
