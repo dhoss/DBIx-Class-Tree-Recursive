@@ -5,3 +5,7 @@
  - search by id, as well as name
  - switch back to FULL rs examination
  - fix this path bug
+
+16:40 #dbix-class: <@ribasushi> dhoss: right. it's fucked, I need to add an override of move_to_group, and augment the move within a group
+16:41 #dbix-class: <@ribasushi> dhoss: to make it right however I need a proper test-handholder - at every step check the status of *all* 8 rows, then I'll get the actual internal right 
+16:41 #dbix-class: <@ribasushi> dhoss: so - please do rewrite the test to really do check_rs(), and no slacking!
